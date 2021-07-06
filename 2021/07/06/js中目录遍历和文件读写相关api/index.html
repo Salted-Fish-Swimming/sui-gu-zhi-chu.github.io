@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>js中目录遍历和文件读写相关api | sui-gu-zhi-chu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="fs的异步api在nodejs中，fs有两种导入模式。 一种是使用require(&#39;fs&#39;)的方式导入基于回调函数的api， 另一种则是通过require(&#39;fs&#x2F;promise&#39;)的方式返回promise的api。下面以文件读取为例子，展现两种类型的api的使用方式。 回调式的代码如下所示： 12345678910const fs &#x3D; require(&amp;#x27;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="js中目录遍历和文件读写相关api">
+<meta property="og:url" content="http://example.com/2021/07/06/js%E4%B8%AD%E7%9B%AE%E5%BD%95%E9%81%8D%E5%8E%86%E5%92%8C%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99%E7%9B%B8%E5%85%B3api/index.html">
+<meta property="og:site_name" content="sui-gu-zhi-chu">
+<meta property="og:description" content="fs的异步api在nodejs中，fs有两种导入模式。 一种是使用require(&#39;fs&#39;)的方式导入基于回调函数的api， 另一种则是通过require(&#39;fs&#x2F;promise&#39;)的方式返回promise的api。下面以文件读取为例子，展现两种类型的api的使用方式。 回调式的代码如下所示： 12345678910const fs &#x3D; require(&amp;#x27;">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-07-06T13:21:26.000Z">
+<meta property="article:modified_time" content="2021-07-06T14:45:38.245Z">
+<meta property="article:author" content="sui-gu-zhi-chu">
+<meta property="article:tag" content="sui-gu-zhi-chu">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="sui-gu-zhi-chu" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">sui-gu-zhi-chu</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-js中目录遍历和文件读写相关api" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2021/07/06/js%E4%B8%AD%E7%9B%AE%E5%BD%95%E9%81%8D%E5%8E%86%E5%92%8C%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99%E7%9B%B8%E5%85%B3api/" class="article-date">
+  <time class="dt-published" datetime="2021-07-06T13:21:26.000Z" itemprop="datePublished">2021-07-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      js中目录遍历和文件读写相关api
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="fs的异步api"><a href="#fs的异步api" class="headerlink" title="fs的异步api"></a>fs的异步api</h2><p>在<code>nodejs</code>中，<code>fs</code>有两种导入模式。 一种是使用<code>require(&#39;fs&#39;)</code>的方式导入基于回调函数的api， 另一种则是通过<code>require(&#39;fs/promise&#39;)</code>的方式返回promise的api。下面以文件读取为例子，展现两种类型的api的使用方式。</p>
+<p>回调式的代码如下所示：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">&#x27;fs&#x27;</span>);</span><br><span class="line"><span class="comment">// 文件路径， 回调函数</span></span><br><span class="line">fs.readFile(filepath, <span class="function"><span class="keyword">function</span>(<span class="params">error, data</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 错误对象， 读取数据</span></span><br><span class="line">  <span class="keyword">if</span> (error) &#123;</span><br><span class="line">    <span class="comment">// 错误处理代码</span></span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// 处理读取数据代码</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>返回<code>promise</code>的代码如下所示</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> fsPromise = <span class="built_in">require</span>(<span class="string">&#x27;fs/promises&#x27;</span>);</span><br><span class="line"><span class="comment">// 立执行函数</span></span><br><span class="line">(<span class="keyword">async</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> data = <span class="keyword">await</span> fsPromise.readFile(filepath);</span><br><span class="line">    <span class="comment">// 处理读取数据代码</span></span><br><span class="line">  &#125; <span class="keyword">catch</span> &#123;</span><br><span class="line">    <span class="comment">// 错误处理代码</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+
+<p>使用<code>fsPromise</code>返回的是一个<code>Promise</code>对象,可以直接使用<code>await</code>语法将异步代码转变为同步代码，使程序具有更好的可读性。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/07/06/js%E4%B8%AD%E7%9B%AE%E5%BD%95%E9%81%8D%E5%8E%86%E5%92%8C%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99%E7%9B%B8%E5%85%B3api/" data-id="ckqs61rm20001xkv7as1y3j49" data-title="js中目录遍历和文件读写相关api" class="article-share-link">Share</a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2021/07/06/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Hello World</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">July 2021</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/07/06/js%E4%B8%AD%E7%9B%AE%E5%BD%95%E9%81%8D%E5%8E%86%E5%92%8C%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99%E7%9B%B8%E5%85%B3api/">js中目录遍历和文件读写相关api</a>
+          </li>
+        
+          <li>
+            <a href="/2021/07/06/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2021 sui-gu-zhi-chu<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
